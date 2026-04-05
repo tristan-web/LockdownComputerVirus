@@ -1,0 +1,1 @@
+⚠️ Warning: This software is intended strictly for use in virtual machines (VMs). Do not run it on your main computer or on any system you do not own or have explicit permission to use. The creator accepts no responsibility for any damage, data loss, or potential security risks that may occur from using this program.
